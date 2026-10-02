@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Family & Vehicle Registration</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f4f7f6;color:#17211f}
+.wrap{max-width:520px;margin:auto;padding:24px 16px 40px}.card{background:white;border-radius:20px;padding:24px;box-shadow:0 8px 30px #00000012}
+h1{font-size:25px;margin:0 0 6px}.sub{color:#66736f;margin:0 0 24px}
+label{display:block;font-weight:650;margin:16px 0 7px}input{width:100%;padding:14px;border:1px solid #ccd6d2;border-radius:11px;font-size:16px}
+button{width:100%;margin-top:24px;padding:15px;border:0;border-radius:12px;background:#128c7e;color:white;font-size:17px;font-weight:700}
+button:disabled{opacity:.6}.msg{margin-top:18px;padding:13px;border-radius:10px;display:none}.ok{background:#e7f7ef;color:#176b48}.err{background:#fff0f0;color:#9b2525}
+.note{font-size:12px;color:#71807b;margin-top:16px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card">
+<h1>Family & Vehicle Registration</h1>
+<p class="sub">Please enter your details below.</p>
+<form id="form">
+<label for="name">Name</label><input id="name" name="name" required autocomplete="name">
+<label for="nic">NIC Number</label><input id="nic" name="nic" required autocomplete="off">
+<label for="vehicle">Vehicle Number</label><input id="vehicle" name="vehicle" required autocomplete="off">
+<label for="kids">Number of Kids</label><input id="kids" name="kids" type="number" min="0" max="30" value="0" required>
+<button id="submit">Submit Registration</button>
+</form>
+<div id="msg" class="msg"></div>
+<p class="note">Your information will be recorded in the registration list. Please check your details before submitting.</p>
+</div></div>
+<script>
+const ENDPOINT="PASTE_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+const form=document.getElementById("form"), btn=document.getElementById("submit"), msg=document.getElementById("msg");
+form.addEventListener("submit", async e=>{
+ e.preventDefault();
+ if(ENDPOINT.includes("PASTE_")){show("The registration system is not connected yet. Please ask the administrator to finish setup.","err");return}
+ btn.disabled=true; btn.textContent="Submitting…";
+ const data=Object.fromEntries(new FormData(form).entries());
+ try{
+   const r=await fetch(ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(data)});
+   form.reset(); document.getElementById("kids").value=0;
+   show("Registration submitted successfully.","ok");
+ }catch(err){show("Could not submit. Please try again.","err")}
+ finally{btn.disabled=false;btn.textContent="Submit Registration"}
+});
+function show(t,c){msg.textContent=t;msg.className="msg "+c;msg.style.display="block"}
+</script>
+</body>
+</html>
